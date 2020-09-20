@@ -1,0 +1,44 @@
+{
+  "name": "route-study",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@craco/craco": "^5.6.4",
+    "antd": "^4.6.3",
+    "axios": "^0.20.0",
+    "immutable": "^4.0.0-rc.12",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.2.1",
+    "react-router-config": "^5.1.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.2.0",
+    "react-thunk": "^1.0.0",
+    "redux": "^4.0.5",
+    "redux-immutable": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "styled-components": "^5.2.0"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
