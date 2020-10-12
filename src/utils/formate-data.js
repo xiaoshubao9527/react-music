@@ -47,3 +47,23 @@ export const formateTime = (time) => {
     s = (s + '').length > 1 ? s : '0' + s
     return `${m}:${s}`;
 }
+// 格式化格斯
+export const formateLyric = (lyric) => {
+    const newLyric = lyric.split(/\n/)
+    const arr  = []
+    newLyric.forEach(item => {
+        const timeReg = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/
+        if (item.match(timeReg)) {
+            const timeHou = item.match(timeReg)[1] * 60 * 1000
+            const timeMin = item.match(timeReg)[2] * 1000
+            const timeSec = item.match(timeReg)[3] * 1
+            const time = timeHou + timeMin + timeSec
+            const lyric = item.replace(timeReg, '').trim();
+            arr.push({
+                time,
+                lyric
+            })
+        }
+    })
+    return arr;
+}

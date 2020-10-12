@@ -126,7 +126,15 @@ export const PlayerRight = Styled.div`
       background-position: -2px -248px;
     }
     & :nth-child(2) {
-      background-position: -3px -344px;
+      background-position: ${props => {
+        if (props.currentPattern === 0) {
+          return '-3px -344px'
+        } else if (props.currentPattern === 1) {
+          return '-66px -248px'
+        } else {
+          return '-66px -344px'
+        }
+      }}
     }
     & :nth-child(3) {
       width: 38px;
@@ -140,4 +148,13 @@ export const PlayerRight = Styled.div`
       text-decoration: none;
     }
   }
+`
+export const ShowLyricWrapper = Styled.div`
+  padding: 14px 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20%;
+  color: white;
 `

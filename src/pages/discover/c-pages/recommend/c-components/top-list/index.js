@@ -3,6 +3,7 @@ import {useDispatch, useSelector, shallowEqual} from 'react-redux'
 
 import {TopListWrapper, Content} from './style'
 import {getTopListAction} from '../../store/actionCreators'
+import {getPlaySongDetailInfoAction} from '@/pages/song-detail/store'
 
 import RecommendThemeHeader from '@/components/recommend-theme-header'
 export default memo(function TopList() {
@@ -18,6 +19,13 @@ export default memo(function TopList() {
     dispatch(getTopListAction(2))
     dispatch(getTopListAction(3))
   }, [dispatch])
+  // 其他逻辑
+
+  // 点击添加播放音乐
+  const playMusic = (e, id) => {
+    e.preventDefault()
+    dispatch(getPlaySongDetailInfoAction(id))
+  }
   return (
     <TopListWrapper>
       <RecommendThemeHeader title={'榜单'} />
@@ -38,7 +46,7 @@ export default memo(function TopList() {
                     return (
                         <div className="list-item" key={item.id} style={{backgroundColor: ((index +  1) % 2) && '#E8E8E8'}}>
                           <span style={{color: index < 3 && '#c10d0c' }}>{index + 1}</span>
-                          <a className="text-overflow" href="/todo">{item.name}</a>
+                          <a className="text-overflow" href="/todo" onClick={e => playMusic(e, item.id)}>{item.name}</a>
                           {/* <div className="open">
                             <a href="/todo">播放</a>
                             <a href="/todo">添加</a>
@@ -66,7 +74,7 @@ export default memo(function TopList() {
                     return (
                         <div className="list-item" key={item.id} style={{backgroundColor: ((index +  1) % 2) && '#E8E8E8'}}>
                           <span style={{color: index < 3 && '#c10d0c' }}>{index + 1}</span>
-                          <a className="text-overflow" href="/todo">{item.name}</a>
+                          <a className="text-overflow" href="/todo" onClick={e => playMusic(e, item.id)}>{item.name}</a>
                           {/* <div className="open">
                             <a href="/todo">播放</a>
                             <a href="/todo">添加</a>
@@ -94,7 +102,7 @@ export default memo(function TopList() {
                   return (
                       <div className="list-item" key={item.id} style={{backgroundColor: ((index +  1) % 2) && '#E8E8E8'}}>
                         <span style={{color: index < 3 && '#c10d0c' }}>{index + 1}</span>
-                        <a className="text-overflow" href="/todo">{item.name}</a>
+                        <a className="text-overflow" href="/todo" onClick={e => playMusic(e, item.id)}>{item.name}</a>
                         {/* <div className="open">
                           <a href="/todo">播放</a>
                           <a href="/todo">添加</a>

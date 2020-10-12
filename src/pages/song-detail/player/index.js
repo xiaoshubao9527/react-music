@@ -4,35 +4,49 @@ import { Slider } from 'antd';
 
 import {
   PlayerWrapper, 
-  PlayerLeft, 
-  PlayerMiddle, 
-  PlayerRight
+  PlayerLeft,
+  PlayerMiddle,
+  PlayerRight,
+  ShowLyricWrapper
 } from './style'
-import {getPlaySongDetailInfoAction, getPlaySongUrlAction} from '../store/actionCreators'
+import {getPlaySongDetailInfoAction, changeCurrentPatternAction, changeSongIndex, getSongLyricAction} from '../store/actionCreators'
 import {getImageSize, formateTime} from '@/utils/formate-data'
 
 export default memo(function Player() {
   // redux-hooks
   const dispatch = useDispatch()
-  const {playSongDetailInfo, playSongUrl} = useSelector(state => ({
+  const {playSongDetailInfo, playSongUrl, currentPattern, songLyric} = useSelector(state => ({
     playSongDetailInfo: state.getIn(['songDetail','playSongDetailInfo']),
-    playSongUrl: state.getIn(['songDetail','playSongUrl'])
+    playSongUrl: state.getIn(['songDetail','playSongUrl']),
+    currentPattern: state.getIn(['songDetail','currentPattern']),
+    songLyric: state.getIn(['songDetail', 'songLyric'])
   }), shallowEqual)
 
-  //other-hooks
+  // other-hooks
   const audioRef = useRef();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [sliderValue, setSliderValue] = useState(0);
   const [isUpdateAudioTime, setIsUpdateAudioTime] = useState(true)
+  const [lyric, setLyric] = useState('')
   useEffect(() => {
     dispatch(getPlaySongDetailInfoAction(167876))
-    dispatch(getPlaySongUrlAction(167876))
   }, [dispatch])
 
   useEffect(() => {
     audioRef.current.src = playSongUrl.url
+    audioRef.current.play()
+    .then(res => {
+      setIsPlaying(true)
+    })
+    .catch(err => {
+      setIsPlaying(false)
+    })
   }, [playSongUrl])
+  // 获取歌词
+  useEffect(() => {
+    dispatch(getSongLyricAction(167876))
+  }, [dispatch])
   // 其他逻辑代码
   const songName = playSongDetailInfo.songName
   const songAuthor = playSongDetailInfo.ar && playSongDetailInfo.ar[0].name
@@ -47,13 +61,27 @@ export default memo(function Player() {
       audioRef.current.pause()
     }
   }, [isPlaying])
-  // 歌曲播放回调
+  // 点击上一首和下一首的按钮
+  const clickPlayMusic = (e, number) => {
+    e.preventDefault()
+    dispatch(changeSongIndex(number));
+  }
+  // 歌曲播放中的回调
   const audioTimeUpdate = useCallback((e) => {
+    const newCurrentTime = e.target.currentTime * 1000
+    const index = songLyric.findIndex(item => item.time > newCurrentTime)
+    if (index !== -1) {
+      setLyric(songLyric[index - 1].lyric)
+    }
     if (isUpdateAudioTime) {
-      setCurrentTime(e.target.currentTime * 1000);
+      setCurrentTime(newCurrentTime);
       setSliderValue(currentTime / totalTime * 100);
     }
   }, [isUpdateAudioTime, currentTime, sliderValue, totalTime])
+  // 歌曲播放结束的回调
+  const audioEnd = useCallback(() => {
+    dispatch(changeSongIndex(1));
+  }, [dispatch])
   // 滑动滑块回调
   const handleSliderChange = useCallback((value) => {
     setSliderValue(value)
@@ -65,17 +93,26 @@ export default memo(function Player() {
     setCurrentTime(value * totalTime / 100)
     audioRef.current.currentTime = (value * totalTime / 100) / 1000;
     setIsUpdateAudioTime(true);
+    if (!isPlaying) {
+      playMusic()
+    }
   }, [currentTime, isUpdateAudioTime, totalTime])
+
+  // 点击切换播放歌曲的模式
+  const switchPattern = (e) => {
+    e.preventDefault()
+    dispatch(changeCurrentPatternAction((currentPattern + 1) % 3));
+  }
   return (
     <PlayerWrapper>
       <div className="wrap">
         <PlayerLeft isPlaying={isPlaying}>
-          <a href="#/" className="prev">上一首</a>
+          <a href="/to" className="prev" onClick={e => clickPlayMusic(e, -1)}>上一首</a>
           <a href="#/" className="play" onClick={e => {
             e.preventDefault()
             playMusic()
           }}>播放</a>
-          <a href="#/" className="next">下一首</a>
+          <a href="/to" className="next" onClick={e => clickPlayMusic(e, 1)}>下一首</a>
         </PlayerLeft>
         <PlayerMiddle>
           <div className="song-pic">
@@ -103,19 +140,22 @@ export default memo(function Player() {
             </div>
           </div>  
         </PlayerMiddle>
-        <PlayerRight>
+        <PlayerRight currentPattern={currentPattern}>
           <div className="oper-left">
             <a href="/todo">1</a>
             <a href="/todo">2</a>
           </div>
           <div className="oper-right">
             <a href="/todo">3</a>
-            <a href="/todo">4</a>
+            <a href="/todo" onClick={e => switchPattern(e)}>4</a>
             <a href="/todo">5</a>
           </div>
         </PlayerRight>
       </div>
-      <audio ref={audioRef} onTimeUpdate={audioTimeUpdate} />
+      <audio ref={audioRef} onTimeUpdate={audioTimeUpdate} onEnded={audioEnd} />
+      <ShowLyricWrapper>
+        {lyric}
+      </ShowLyricWrapper>
     </PlayerWrapper>
   )
 })

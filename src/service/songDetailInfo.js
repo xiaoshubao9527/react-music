@@ -16,3 +16,11 @@ export const getPlaySongUrl = (id) => {
     }
   })
 }
+export const getPlaySongLyric = (id) => {
+  return request({
+    url: '/lyric',
+    params: {
+      id
+    }
+  })
+}
